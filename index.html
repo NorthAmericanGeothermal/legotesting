@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Leveling the Peak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg:#E9EDF0; --surface:#fff; --surface2:#F2F5F7; --ink:#14202B; --ink2:#566573; --line:#CAD3DB;
+  --accent:#1B5E9B; --on-accent:#fff; --ok:#17744F; --ok-tint:#DFF1E8; --bad:#C2410C; --bad-tint:#FCE9DF; --warn:#F0B429;
+  --display:'Barlow Condensed','Arial Narrow',sans-serif; --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif; --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#0E151C; --surface:#16202A; --surface2:#1C2733; --ink:#E5ECF2; --ink2:#9BABBA; --line:#2B3947;
+  --accent:#6DB2F2; --on-accent:#0B1620; --ok:#52C98F; --ok-tint:#143225; --bad:#FF9466; --bad-tint:#3A2218; --warn:#E6AB1E; color-scheme:dark; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 var(--body);
+  padding:20px max(16px, env(safe-area-inset-right,0px)) 56px max(16px, env(safe-area-inset-left,0px)); }
+.wrap { max-width:720px; margin:0 auto; display:flex; flex-direction:column; gap:16px; }
+h1,h2 { font-family:var(--display); text-transform:uppercase; letter-spacing:.05em; margin:0; text-wrap:balance; line-height:1.05; }
+h1 { font-size:38px; } h2 { font-size:24px; }
+p { margin:0; } .lead { color:var(--ink2); max-width:60ch; }
+.stripe { height:6px; background:repeating-linear-gradient(135deg,var(--warn) 0 9px,var(--ink) 9px 18px); }
+.card { background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:16px; display:flex; flex-direction:column; gap:12px; min-width:0; }
+.step { font:600 12px var(--display); letter-spacing:.12em; text-transform:uppercase; color:var(--accent); }
+.tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:6px; }
+table { border-collapse:collapse; width:100%; font:13px var(--mono); }
+th,td { padding:8px 10px; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap; }
+th:first-child,td:first-child { text-align:left; font-family:var(--body); }
+thead th { background:var(--surface2); font:600 11px var(--display); letter-spacing:.1em; color:var(--ink2); }
+tr:last-child td { border-bottom:0; }
+td.hot { background:var(--bad-tint); color:var(--bad); font-weight:600; }
+td.full { background:var(--ok-tint); color:var(--ok); font-weight:600; }
+.seg { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+.seg button { font:600 15px var(--display); letter-spacing:.08em; text-transform:uppercase; padding:11px 6px; border:0; background:var(--surface); color:var(--ink); cursor:pointer; min-height:44px; }
+.seg button[aria-pressed="true"] { background:var(--ink); color:var(--surface); }
+.seg button:focus-visible { outline:2px solid var(--accent); outline-offset:-3px; }
+.chart { width:100%; height:auto; display:block; }
+.chart .gl { stroke:var(--line); } .chart .ax { fill:var(--ink2); font:10px var(--mono); }
+.chart .bar { fill:var(--accent); } .chart .bar.over { fill:var(--bad); }
+.chart .cap { stroke:var(--ink); stroke-width:2.5; } .chart .val { fill:var(--ink2); font:10px var(--mono); text-anchor:middle; } .chart .val.over { fill:var(--bad); font-weight:600; }
+.caption { font-size:14px; color:var(--ink2); min-height:3em; }
+.caption b { color:var(--ink); }
+.three { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; }
+.three div { background:var(--surface2); border:1px solid var(--line); border-radius:6px; padding:12px; }
+.three strong { display:block; font:700 18px var(--display); letter-spacing:.05em; text-transform:uppercase; }
+.three span { font-size:14px; color:var(--ink2); }
+.callout { border-left:4px solid var(--warn); background:var(--surface); padding:12px 14px; border-radius:0 6px 6px 0; border:1px solid var(--line); border-left:4px solid var(--warn); }
+.foot { font-size:13px; color:var(--ink2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:10px">
+    <h1>Leveling the Peak</h1>
+    <p class="lead">What to do when demand spikes and a machine can't keep up, shown with a toy-factory example.</p>
+  </header>
+  <div class="stripe" aria-hidden="true"></div>
+
+  <section class="card">
+    <span class="step">1 · The setup</span>
+    <p>Molding makes Brick Bags at <b>0.1 hour each</b>. It has <b>60 hours a week</b>, so it can make at most <b>600 bags a week</b>.</p>
+    <p>A holiday spike hits the finished sets in W5 and W6. Because MRP is just-in-time, it plans bags the week <i>before</i> they're needed, so the spike lands on W4.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Week</th><th>W1</th><th>W2</th><th>W3</th><th>W4</th><th>W5</th><th>W6</th></tr></thead>
+      <tbody>
+        <tr><td>Bags to start</td><td>200</td><td>300</td><td>400</td><td>800</td><td>500</td><td>400</td></tr>
+        <tr><td>Hours needed</td><td>20</td><td>30</td><td>40</td><td class="hot">80</td><td>50</td><td>40</td></tr>
+        <tr><td>Hours available</td><td>60</td><td>60</td><td>60</td><td>60</td><td>60</td><td>60</td></tr>
+      </tbody></table></div>
+    <p>W4 needs 80 hours against 60 available: <b>20 hours over</b>. MRP doesn't check the machine. It plans what's needed and leaves the conflict for the planner.</p>
+  </section>
+
+  <section class="card">
+    <span class="step">2 · Try the fix</span>
+    <div class="seg" role="group" aria-label="Plan version">
+      <button id="bBefore" aria-pressed="true">Before</button>
+      <button id="bAfter" aria-pressed="false">After firm order</button>
+    </div>
+    <div id="chart"></div>
+    <p class="caption" id="cap" aria-live="polite"></p>
+  </section>
+
+  <section class="card">
+    <span class="step">3 · Why it works</span>
+    <p>You can't make 800 in W4, because only 600 fit. The other 200 have to be made in a different week. <b>W3 has 20 spare hours</b> right before the spike.</p>
+    <p>MRP will never build early on its own. A <b>firm order</b> is the planner overriding it: <i>"release 600 bags in W3, no matter what."</i></p>
+    <ul style="margin:0;padding-left:20px">
+      <li>W3 makes 600 bags: 60 hours, exactly full.</li>
+      <li>They arrive in W4, so 200 are already on the shelf.</li>
+      <li>MRP now only needs to start 600 in W4, not 800: 60 hours, exactly full.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <span class="step">4 · The trade</span>
+    <p>Planners have three tools. Each one costs something different.</p>
+    <div class="three">
+      <div><strong>Build early</strong><span>Costs stock. Average inventory rose from 168 to 188 in this example.</span></div>
+      <div><strong>Add overtime</strong><span>Costs labor money. Allowed here only up to 8 hours.</span></div>
+      <div><strong>Ship late</strong><span>Costs customer trust. Not allowed in this scenario.</span></div>
+    </div>
+    <div class="callout">Leveling means trading <b>inventory for capacity</b>: you carry extra stock for a week so the machine never has to exceed its limit.</div>
+  </section>
+
+  <p class="foot">Numbers come from the Tidewater Planning Desk practice factory: a simplified teaching model of the planning logic that ERP systems such as SAP and Kinaxis run.</p>
+</div>
+
+<script>
+(function () {
+  var DATA = {
+    before: { load: [20,30,40,80,50,40,20,30], cap: 60,
+      cap_text: '<b>Before.</b> W4 needs <b>80 hours</b> against 60. That is 20 hours over, shown in orange.' },
+    after:  { load: [20,30,60,60,50,40,20,30], cap: 60,
+      cap_text: '<b>After.</b> A firm order of 600 bags in W3 uses the spare hours. W4 drops to 60 hours. <b>Nothing is over capacity</b>, with no overtime. The cost: more stock sits on the shelf.' }
+  };
+  function svg(d) {
+    var VW = 360, VH = 190, pl = 30, pr = 8, pt = 14, pb = 22, top = 100, n = d.load.length;
+    var y = function (v) { return pt + (VH - pt - pb) * (1 - v / top); };
+    var bw = (VW - pl - pr) / n, w = bw * 0.6, s = '<svg class="chart" viewBox="0 0 ' + VW + ' ' + VH + '" role="img" aria-label="Molding hours by week against 60 hour capacity">';
+    for (var g = 0; g <= 100; g += 25) s += '<line class="gl" x1="' + pl + '" x2="' + (VW - pr) + '" y1="' + y(g) + '" y2="' + y(g) + '"/><text class="ax" x="' + (pl - 4) + '" y="' + (y(g) + 3) + '" text-anchor="end">' + g + '</text>';
+    d.load.forEach(function (L, t) {
+      var x = pl + t * bw + (bw - w) / 2, over = L > d.cap;
+      s += '<rect class="bar' + (over ? ' over' : '') + '" x="' + x.toFixed(1) + '" y="' + y(L).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + (y(0) - y(L)).toFixed(1) + '"/>' +
+        '<text class="val' + (over ? ' over' : '') + '" x="' + (x + w / 2).toFixed(1) + '" y="' + (Math.min(y(L), y(d.cap)) - 4).toFixed(1) + '">' + L + '</text>' +
+        '<line class="cap" x1="' + (x - 3).toFixed(1) + '" x2="' + (x + w + 3).toFixed(1) + '" y1="' + y(d.cap) + '" y2="' + y(d.cap) + '"/>' +
+        '<text class="ax" x="' + (x + w / 2).toFixed(1) + '" y="' + (VH - 6) + '" text-anchor="middle">W' + (t + 1) + '</text>';
+    });
+    return s + '</svg>';
+  }
+  function show(k) {
+    document.getElementById('chart').innerHTML = svg(DATA[k]);
+    document.getElementById('cap').innerHTML = DATA[k].cap_text + ' The dark tick marks the 60-hour capacity.';
+    document.getElementById('bBefore').setAttribute('aria-pressed', k === 'before');
+    document.getElementById('bAfter').setAttribute('aria-pressed', k === 'after');
+  }
+  document.getElementById('bBefore').onclick = function () { show('before'); };
+  document.getElementById('bAfter').onclick = function () { show('after'); };
+  show('before');
+})();
+</script>
+</body>
+</html>
